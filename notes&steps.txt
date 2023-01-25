@@ -1,0 +1,84 @@
+https://csnotes.medium.com/pipex-tutorial-42-project-4469f5dd5901
+https://www.youtube.com/watch?v=6xbLgZpOBi8&pp=ugMICgJlbhABGAE%3D
+
+------------------------------------------------------------------
+
+Pipex reproduces the behaviour of the shell pipe | command in C.
+It launches as ./pipex infile cmd1 cmd2 outfile and behaves as this 
+line does in the shell < infile cmd1 | cmd2 > outfile .
+
+This article is structured as follow:
+1 — Background theory — pipe() , fork() , dup2() and execve()
+2 — How to do pipex with two child processes
+3 — The access() function
+4 — Frequently encountered problems
+
+------------------------------------------------------------------
+
+Program name: pipex
+Turn in files: Makefile, *.h, *.c
+Makefile: NAME, all, clean, fclean, re
+Arguments: file1 cmd1 cmd2 file2
+External functs:
+• open, close, read, write,
+malloc, free, perror,
+strerror, access, dup, dup2,
+execve, exit, fork, pipe,
+unlink, wait, waitpid
+• ft_printf and any equivalent
+YOU coded
+Libft authorized: Yes
+Description: This project is about handling pipes.
+
+------------------------------------------------------------------
+
+Perror Function
+
+Description
+
+The C library function void perror(const char *str) prints a 
+descriptive error message to stderr. First the string str is 
+printed, followed by a colon then a space.
+
+Declaration
+Following is the declaration for perror() function.
+void perror(const char *str)
+
+Parameters
+
+    str − This is the C string containing a custom message to 
+	be printed before the error message itself.
+
+
+------------------------------------------------------------------
+
+Strerror Function
+Description
+
+The C library function char *strerror(int errnum) searches an 
+internal array for the error number errnum and returns a pointer 
+to an error message string. The error strings produced by strerror
+depend on the developing platform and compiler.
+
+Declaration
+Following is the declaration for strerror() function.
+char *strerror(int errnum)
+
+Parameters
+
+    errnum − This is the error number, usually errno.
+
+Return Value
+
+This function returns a pointer to the error string describing error errnum.
+
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
+------------------------------------------------------------------
