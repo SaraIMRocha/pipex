@@ -73,12 +73,486 @@ Return Value
 This function returns a pointer to the error string describing error errnum.
 
 ------------------------------------------------------------------
+
+Access Function
+Check real user's permissions for a file
+
+Synopsis
+#include <unistd.h>
+int access(const char *pathname, int mode);
+
+Description
+access() checks whether the calling process can access the file pathname.
+If pathname is a symbolic link, it is dereferenced. 
+Return Value
+On success (all requested permissions granted), zero is returned. 
+On error (at least one bit in mode asked for a permission that is denied, 
+or some other error occurred), -1 is returned, and errno is set appropriately.
+
+Errors
+access() shall fail if:
+
+EACCES
+    The requested access would be denied to the file, or search permission is 
+	denied for one of the directories in the path prefix of pathname.
+ELOOP
+    Too many symbolic links were encountered in resolving pathname. 
+ENAMETOOLONG
+    pathname is too long. 
+ENOENT
+    A component of pathname does not exist or is a dangling symbolic link. 
+ENOTDIR
+    A component used as a directory in pathname is not, in fact, a directory. 
+EROFS
+    Write permission was requested for a file on a read-only file system.
+
+access() may fail if:
+
+EFAULT
+    pathname points outside your accessible address space. 
+EINVAL
+    mode was incorrectly specified. 
+EIO
+    An I/O error occurred. 
+ENOMEM
+    Insufficient kernel memory was available. 
+ETXTBSY
+    Write access was requested to an executable which is being executed.
+
 ------------------------------------------------------------------
+
+Dup & Dup2 Functions
+
+NAME         top
+
+       dup, dup2, dup3 - duplicate a file descriptor
+
+SYNOPSIS
+
+       #include <unistd.h>
+
+       int dup(int oldfd);
+       int dup2(int oldfd, int newfd);
+
+       #define _GNU_SOURCE             /* See feature_test_macros(7) */
+       #include <fcntl.h>              /* Definition of O_* constants */
+       #include <unistd.h>
+
+DESCRIPTION
+
+       The dup() system call allocates a new file descriptor that refers
+       to the same open file description as the descriptor oldfd.  (For
+       an explanation of open file descriptions, see open(2).)  The new
+       file descriptor number is guaranteed to be the lowest-numbered
+       file descriptor that was unused in the calling process.
+
+       After a successful return, the old and new file descriptors may
+       be used interchangeably.  Since the two file descriptors refer to
+       the same open file description, they share file offset and file
+       status flags; for example, if the file offset is modified by
+       using lseek(2) on one of the file descriptors, the offset is also
+       changed for the other file descriptor.
+
+       The two file descriptors do not share file descriptor flags (the
+       close-on-exec flag).  The close-on-exec flag (FD_CLOEXEC; see
+       fcntl(2)) for the duplicate descriptor is off.
+
+   dup2()
+       The dup2() system call performs the same task as dup(), but
+       instead of using the lowest-numbered unused file descriptor, it
+       uses the file descriptor number specified in newfd.  In other
+       words, the file descriptor newfd is adjusted so that it now
+       refers to the same open file description as oldfd.
+
+       If the file descriptor newfd was previously open, it is closed
+       before being reused; the close is performed silently (i.e., any
+       errors during the close are not reported by dup2()).
+
+       The steps of closing and reusing the file descriptor newfd are
+       performed atomically.  This is important, because trying to
+       implement equivalent functionality using close(2) and dup() would
+       be subject to race conditions, whereby newfd might be reused
+       between the two steps.  Such reuse could happen because the main
+       program is interrupted by a signal handler that allocates a file
+       descriptor, or because a parallel thread allocates a file
+       descriptor.
+
+       Note the following points:
+
+       *  If oldfd is not a valid file descriptor, then the call fails,
+          and newfd is not closed.
+
+       *  If oldfd is a valid file descriptor, and newfd has the same
+          value as oldfd, then dup2() does nothing, and returns newfd.
+
+
 ------------------------------------------------------------------
+
+Execve Function
+
+NAME
+
+       execve - execute program
+
+SYNOPSIS
+
+       #include <unistd.h>
+
+       int execve(const char *pathname, char *const argv[],
+                  char *const envp[]);
+
+DESCRIPTION
+
+       execve() executes the program referred to by pathname.  This
+       causes the program that is currently being run by the calling
+       process to be replaced with a new program, with newly initialized
+       stack, heap, and (initialized and uninitialized) data segments.
+
+       pathname must be either a binary executable, or a script starting
+       with a line of the form:
+
+           #!interpreter [optional-arg]
+
+       For details of the latter case, see "Interpreter scripts" below.
+
+       argv is an array of pointers to strings passed to the new program
+       as its command-line arguments.  By convention, the first of these
+       strings (i.e., argv[0]) should contain the filename associated
+       with the file being executed.  The argv array must be terminated
+       by a NULL pointer.  (Thus, in the new program, argv[argc] will be
+       NULL.)
+
+       envp is an array of pointers to strings, conventionally of the
+       form key=value, which are passed as the environment of the new
+       program.  The envp array must be terminated by a NULL pointer.
+
+
 ------------------------------------------------------------------
+
+Exit function
+
+Description
+
+The C library function void exit(int status) terminates the calling 
+process immediately. Any open file descriptors belonging to the 
+process are closed and any children of the process are inherited 
+by process 1, init, and the process parent is sent a SIGCHLD signal.
+
+Declaration
+Following is the declaration for exit() function.
+void exit(int status)
+
+Parameters
+    status − This is the status value returned to the parent process.
+
 ------------------------------------------------------------------
+
+Fork function
+
+NAME         top
+
+       fork - create a child process
+
+SYNOPSIS         top
+
+       #include <unistd.h>
+
+       pid_t fork(void);
+
+DESCRIPTION         top
+
+       fork() creates a new process by duplicating the calling process.
+       The new process is referred to as the child process.  The calling
+       process is referred to as the parent process.
+
+       The child process and the parent process run in separate memory
+       spaces.  At the time of fork() both memory spaces have the same
+       content.  Memory writes, file mappings (mmap(2)), and unmappings
+       (munmap(2)) performed by one of the processes do not affect the
+       other.
+
+       The child process is an exact duplicate of the parent process
+       except for the following points:
+
+       *  The child has its own unique process ID, and this PID does not
+          match the ID of any existing process group (setpgid(2)) or
+          session.
+
+       *  The child's parent process ID is the same as the parent's
+          process ID.
+
+       *  The child does not inherit its parent's memory locks
+          (mlock(2), mlockall(2)).
+
+       *  Process resource utilizations (getrusage(2)) and CPU time
+          counters (times(2)) are reset to zero in the child.
+
+       *  The child's set of pending signals is initially empty
+          (sigpending(2)).
+
+       *  The child does not inherit semaphore adjustments from its
+          parent (semop(2)).
+
+       *  The child does not inherit process-associated record locks
+          from its parent (fcntl(2)).  (On the other hand, it does
+          inherit fcntl(2) open file description locks and flock(2)
+          locks from its parent.)
+
+       *  The child does not inherit timers from its parent
+          (setitimer(2), alarm(2), timer_create(2)).
+
+       *  The child does not inherit outstanding asynchronous I/O
+          operations from its parent (aio_read(3), aio_write(3)), nor
+          does it inherit any asynchronous I/O contexts from its parent
+          (see io_setup(2)).
+
+
 ------------------------------------------------------------------
+
+NAME
+
+       pipe, pipe2 - create pipe
+
+SYNOPSIS
+
+       #include <unistd.h>
+
+       int pipe(int pipefd[2]);
+
+       #define _GNU_SOURCE             /* See feature_test_macros(7) */
+       #include <fcntl.h>              /* Definition of O_* constants */
+       #include <unistd.h>
+
+       int pipe2(int pipefd[2], int flags);
+
+       /* On Alpha, IA-64, MIPS, SuperH, and SPARC/SPARC64, pipe() has the
+          following prototype; see NOTES */
+
+       #include <unistd.h>
+
+       struct fd_pair {
+           long fd[2];
+       };
+       struct fd_pair pipe(void);
+
+DESCRIPTION
+
+       pipe() creates a pipe, a unidirectional data channel that can be
+       used for interprocess communication.  The array pipefd is used to
+       return two file descriptors referring to the ends of the pipe.
+       pipefd[0] refers to the read end of the pipe.  pipefd[1] refers
+       to the write end of the pipe.  Data written to the write end of
+       the pipe is buffered by the kernel until it is read from the read
+       end of the pipe.  For further details, see pipe(7).
+
+       If flags is 0, then pipe2() is the same as pipe().  The following
+       values can be bitwise ORed in flags to obtain different behavior:
+
+       O_CLOEXEC
+              Set the close-on-exec (FD_CLOEXEC) flag on the two new
+              file descriptors.  See the description of the same flag in
+              open(2) for reasons why this may be useful.
+
+       O_DIRECT (since Linux 3.4)
+              Create a pipe that performs I/O in "packet" mode.  Each
+              write(2) to the pipe is dealt with as a separate packet,
+              and read(2)s from the pipe will read one packet at a time.
+              Note the following points:
+
+              *  Writes of greater than PIPE_BUF bytes (see pipe(7))
+                 will be split into multiple packets.  The constant
+                 PIPE_BUF is defined in <limits.h>.
+
+              *  If a read(2) specifies a buffer size that is smaller
+                 than the next packet, then the requested number of
+                 bytes are read, and the excess bytes in the packet are
+                 discarded.  Specifying a buffer size of PIPE_BUF will
+                 be sufficient to read the largest possible packets (see
+                 the previous point).
+
+              *  Zero-length packets are not supported.  (A read(2) that
+                 specifies a buffer size of zero is a no-op, and returns
+                 0.)
+
+              Older kernels that do not support this flag will indicate
+              this via an EINVAL error.
+
+              Since Linux 4.5, it is possible to change the O_DIRECT
+              setting of a pipe file descriptor using fcntl(2).
+
+       O_NONBLOCK
+              Set the O_NONBLOCK file status flag on the open file
+              descriptions referred to by the new file descriptors.
+              Using this flag saves extra calls to fcntl(2) to achieve
+              the same result.
+
+RETURN VALUE
+
+       On success, zero is returned.  On error, -1 is returned, errno is
+       set to indicate the error, and pipefd is left unchanged.
+
+       On Linux (and other systems), pipe() does not modify pipefd on
+       failure.  A requirement standardizing this behavior was added in
+       POSIX.1-2008 TC2.  The Linux-specific pipe2() system call
+       likewise does not modify pipefd on failure.
+
 ------------------------------------------------------------------
+
+Unlink function
+
+NAME         top
+
+       unlink, unlinkat - delete a name and possibly the file it refers
+       to
+
+SYNOPSIS         top
+
+       #include <unistd.h>
+
+       int unlink(const char *pathname);
+
+       #include <fcntl.h>           /* Definition of AT_* constants */
+       #include <unistd.h>
+
+       int unlinkat(int dirfd, const char *pathname, int flags);
+
+   Feature Test Macro Requirements for glibc (see
+   feature_test_macros(7)):
+
+       unlinkat():
+           Since glibc 2.10:
+               _POSIX_C_SOURCE >= 200809L
+           Before glibc 2.10:
+               _ATFILE_SOURCE
+
+DESCRIPTION         top
+
+       unlink() deletes a name from the filesystem.  If that name was
+       the last link to a file and no processes have the file open, the
+       file is deleted and the space it was using is made available for
+       reuse.
+
+       If the name was the last link to a file but any processes still
+       have the file open, the file will remain in existence until the
+       last file descriptor referring to it is closed.
+
+       If the name referred to a symbolic link, the link is removed.
+
+       If the name referred to a socket, FIFO, or device, the name for
+       it is removed but processes which have the object open may
+       continue to use it.
+
+   unlinkat()
+       The unlinkat() system call operates in exactly the same way as
+       either unlink() or rmdir(2) (depending on whether or not flags
+       includes the AT_REMOVEDIR flag) except for the differences
+       described here.
+
+       If the pathname given in pathname is relative, then it is
+       interpreted relative to the directory referred to by the file
+       descriptor dirfd (rather than relative to the current working
+       directory of the calling process, as is done by unlink() and
+       rmdir(2) for a relative pathname).
+
+       If the pathname given in pathname is relative and dirfd is the
+       special value AT_FDCWD, then pathname is interpreted relative to
+       the current working directory of the calling process (like
+       unlink() and rmdir(2)).
+
+       If the pathname given in pathname is absolute, then dirfd is
+       ignored.
+
+       flags is a bit mask that can either be specified as 0, or by
+       ORing together flag values that control the operation of
+       unlinkat().  Currently, only one such flag is defined:
+
+       AT_REMOVEDIR
+              By default, unlinkat() performs the equivalent of unlink()
+              on pathname.  If the AT_REMOVEDIR flag is specified, then
+              performs the equivalent of rmdir(2) on pathname.
+
+       See openat(2) for an explanation of the need for unlinkat().
+
+RETURN VALUE         top
+
+       On success, zero is returned.  On error, -1 is returned, and
+       errno is set to indicate the error.
+
+
 ------------------------------------------------------------------
+
+NAME         top
+
+       wait, waitpid, waitid - wait for process to change state
+
+SYNOPSIS         top
+
+       #include <sys/wait.h>
+
+       pid_t wait(int *wstatus);
+       pid_t waitpid(pid_t pid, int *wstatus, int options);
+
+       int waitid(idtype_t idtype, id_t id, siginfo_t *infop, int options);
+                       /* This is the glibc and POSIX interface; see
+                          NOTES for information on the raw system call. */
+
+   Feature Test Macro Requirements for glibc (see
+   feature_test_macros(7)):
+
+       waitid():
+           Since glibc 2.26:
+               _XOPEN_SOURCE >= 500 || _POSIX_C_SOURCE >= 200809L
+           Glibc 2.25 and earlier:
+               _XOPEN_SOURCE
+                   || /* Since glibc 2.12: */ _POSIX_C_SOURCE >= 200809L
+                   || /* Glibc <= 2.19: */ _BSD_SOURCE
+
+DESCRIPTION         top
+
+       All of these system calls are used to wait for state changes in a
+       child of the calling process, and obtain information about the
+       child whose state has changed.  A state change is considered to
+       be: the child terminated; the child was stopped by a signal; or
+       the child was resumed by a signal.  In the case of a terminated
+       child, performing a wait allows the system to release the
+       resources associated with the child; if a wait is not performed,
+       then the terminated child remains in a "zombie" state (see NOTES
+       below).
+
+       If a child has already changed state, then these calls return
+       immediately.  Otherwise, they block until either a child changes
+       state or a signal handler interrupts the call (assuming that
+       system calls are not automatically restarted using the SA_RESTART
+       flag of sigaction(2)).  In the remainder of this page, a child
+       whose state has changed and which has not yet been waited upon by
+       one of these system calls is termed waitable.
+
+   wait() and waitpid()
+       The wait() system call suspends execution of the calling thread
+       until one of its children terminates.  The call wait(&wstatus) is
+       equivalent to:
+
+           waitpid(-1, &wstatus, 0);
+
+       The waitpid() system call suspends execution of the calling
+       thread until a child specified by pid argument has changed state.
+       By default, waitpid() waits only for terminated children, but
+       this behavior is modifiable via the options argument, as
+       described below.
+
+       The value of pid can be:
+
+       < -1   meaning wait for any child process whose process group ID
+              is equal to the absolute value of pid.
+
+       -1     meaning wait for any child process.
+
+       0      meaning wait for any child process whose process group ID
+              is equal to that of the calling process at the time of the
+              call to waitpid().
+
+       > 0    meaning wait for the child whose process ID is equal to
+              the value of pid.
+
 ------------------------------------------------------------------
 ------------------------------------------------------------------
