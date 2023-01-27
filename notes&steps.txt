@@ -14,6 +14,32 @@ stdout and stderr).
 
 ------------------------------------------------------------------
 
+The number of functions you will need for this project will depend 
+on the design and implementation of your program. However, some of 
+the functions that you may need to use or implement include:
+
+A function to parse the command line arguments and check for errors
+A function to open and read from the input file
+A function to execute the first shell command
+A function to handle the pipe between the two commands
+A function to execute the second shell command
+A function to write to the output file
+A function to clean up and free any allocated memory
+A function to handle errors and display appropriate error messages
+
+It's possible you could use additional function to help manage the 
+code and make it more readable and maintainable.
+
+------------------------------------------------------------------
+
+A parser is a program that is part of the compiler, and parsing 
+is part of the compiling process. Parsing happens during the 
+analysis stage of compilation. In parsing, code is taken from
+the preprocessor, broken into smaller pieces and analyzed so
+other software can understand it.
+
+------------------------------------------------------------------
+
 # argv[]: the args the command needs, for ex. `ls -la`
 # you can use your ft_split to obtain a char **
 # like this { "ls", "-la", NULL }

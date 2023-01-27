@@ -1,0 +1,98 @@
+IPEX - instruçoes e cenas
+
+Makefile - all, NAME, clean, fclean, re (nao pode dar relink obv)
+funcoes autorizadas - open, close, read, write, malloc, free, perror, sterror, access, dup, dup2,
+execve, exit, fork, pipe, unlink, wait, waitpid
+libft autorizado
+
+o programa tem de executar ./pipex file1 cmd1 cmd2 file2
+
+o programa tem de receber 4 argumentos, file1 e file2 sao arquivos. cmd1 e cmd2 sao comandos shell
+
+exemplo: ./pipex infile "ls -l" "wc -l" outfile
+
+nao pode dar qualquer tipo de crash, bus error, seg fault, etc nem leaks de memoria
+
+
+ o que sao pipes --- pipes sao a uma maneira de conectar o output de um programa com o input de outro em um ficheiro temporario
+
+ - e possivel conectar 2 ou mais comandos de cada vez
+ - o path que junta os dois programas e o dito pipe representado por |
+ - cmd1 | cmd2  equivale a cmd1 (output) -> cmd2 (input)
+
+funcao pipex que analisa os argumentos e verifica se tem tudo certo
+funcao que analisa qual o erro e dispoe uma mensagem consecutivamente ..
+funcao que le o primeiro argumento file1
+funcao que le o ultimo argumento file2
+funcao que recebe os comandos
+funcao que analisa o path dos comandos
+funcao que liberta or argumentos
+
+(struct????  ---  os comandos tem de apontar para as files, probs ye)
+
+
+funcoes 
+
+perror - void perror(const char *str) --- printa uma mensagem de erro para o stderr
+
+strerror - char *sterror(int errnum) --- funcao que mapa o erro e associa a sua
+mensagem
+
+access - int access(const char *path, int amode) --- funcao que analisa o path
+do ficheiro dado como argumento de acordo com o bit pattern que o amode contem. o 
+valor de amode pode ser em bit, acesso as permissoes ou a existencia de do ficheiro
+o seu retorno pode ser 0 (caso a verificacao seja bem sucedida) ou -1 caso exista um erro
+
+dup - int dup(int oldfd) --- funcao que cria uma copia do fd referido usando o file descriptor
+antigo menos usado para o novo fd
+
+dup2 - int dup2(int oldfd, int newfd) --- funcao que faz o mesmo que a dup, mas em vez
+de usar o menor numero, usa o numero especificado pelo newfd. se o file descriptor no
+newfd ja foi aberto, ele e automaticamente fechado para poder ser usado novamente
+se o oldfd nao for valido, o newfd nao e fechado;
+se o oldfd e valido, e o valor de newfd e igual ao oldfd, a funcao nao faz nada e retorna
+apenas o newfd.
+
+execve - int execve(const char *pathname, char *const argc[], char *const envp[]) ---
+executa o programa ao qual pathname se refere, o que faz com que o programa que esta
+a correr seja substituido, com uma stack, heap e data segmentos inicializados (data
+pode nao ser inicializado). o pathname tem de ser um binario executavel ou um script.
+argv e um array de argumentos string passados para o novo programa. o argv[0] deve conter 
+o nome do fd associado ao ficheiro que esta a ser executado. envp e um array de strings
+que sao passados como environment para o novo programa. argv e envp tem de conter um pointeiro
+null no final de cada array.
+o vector e o environment podem ser acedidos pela funcao main quando e definida assim:
+int main(int argc, char *argv[], char *envp[])
+quando a funcao e executada com sucesso nao tem retorno e o texto/data/stack inicializados
+sao overwritten de acordo com o programa novo.
+quando a funcao nao e bem executada, retorn a -1 e o errno e chamado
+
+fork - pid_t forn(void) --- a funcao duplicao processo de chamar (calling), o novo processo
+e referido como child, o processo chamado e referido como parent. Ambos os processos correm
+em espacos de memoria diferentes, quando a funcao e chamada ambos os espacos tem o mesmo conteudo
+quando a funcao e executada com sucesso, o PID do child e retornado no parent e 0 na child.
+em caso de falha, -1 e retornado e errno e chamado.
+
+pipe - struct fd_pair pipe() ou int pipe(int pipefd) --- funcao que cria um pipe que pode ser
+usado para comunicacao entre processos. o array pipefd e usado para retornar fd's referids nas
+pontas do pipe. pipefd[0] refere se ao final do read do piep. pipefd[1] refere se ao final do
+write do pipe.
+quando bem sucedido, o retorno na funcao e 0. em erro, -1, errno e chamado e o pipefd nao e 
+modificado.
+
+unlink - chamar a funca para remover um ficheiro indicado --- unlink file/option
+
+wait - pid_t wait(int *wstatus) --- funcao que espera que o processo de calling da child para obter
+informacoes mal seja mudade. Um estado mudado da child e considerado quando:
+- o processo de calling e terminado
+- a child foi parado por um sinal emitido
+- a child foi resumida por um sinal emitido
+Quando a child e terminada, a funcao wait permite que todas as resources associadas com a child´
+sejam libertados. Se wait nao for aplicado, a child fica em estado "zombie", ou seja, o kernel
+da child fica com o minimo de informaçao necessaria para o parent ainda a conseguir usar.
+em caso de sucesso, a funcao retorna o numero de processo ID a child terminada, senao retorna -1
+
+waitpid - pid_t waitpid(pid_t pid, int *wstatus, int options) ---  
+
+
+funcoes usadas do libft = strnstr, split 
