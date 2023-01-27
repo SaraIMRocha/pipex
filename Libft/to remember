@@ -1,0 +1,136 @@
+/*
+For most operating systems, a file descriptor (FD) is a small non-negative integer that helps in 
+identifying an open file within a process while using input/output resources
+
+malloc
+The C library function void *malloc(size_t size) allocates the requested memory and returns a pointer to it.
+ptr = (cast-type*) malloc(byte-size)
+For Example:
+
+    ptr = (int*) malloc(100 * sizeof(int));
+    Since the size of int is 4 bytes, this statement will allocate 400 bytes of memory.
+	And, the pointer ptr holds the address of the first byte in the allocated memory.*/
+
+/*
+example of malloc use
+#include <stdio.h>
+#include <stdlib.h>
+
+int main () {
+   char *str;
+
+   Initial memory allocation
+   str = (char *) malloc(15);
+   strcpy(str, "ola migus");
+   printf("String = %s,  Address = %u\n", str, str);
+
+   Reallocating memory
+   str = (char *) realloc(str, 25);
+   strcat(str, "how ai u");
+   printf("String = %s,  Address = %u\n", str, str);
+
+   free(str);
+   
+   return(0);
+}*/
+
+/*
+*	DESCRIPTION
+*	Allocates (with malloc(3)) and returns an array of strings obtained by 
+*	splitting ’s’ using the character ’c’ as a delimiter. The array must be
+*	ended by a NULL pointer.
+*	PARAMETERS
+*	#1. The string to be split.
+*	#2. The delimiter character.
+*	RETURN VALUES
+*	The array of new strings resulting from the split. 
+*	NULL if the allocation fails.
+*/
+
+#include "libft.h"
+
+static int	contador(char const *s, char c)
+{
+	int	i;
+	int	trigger;
+
+	i = 0;
+	trigger = 0;
+	while (*s)
+	{
+		if (*s != c && trigger == 0)
+		{
+			trigger = 1; 
+			//damos o valor de 1 ao trigger para que
+			//não volte a entrar nesta condição
+			i++;
+		}
+		if (*s == c)
+			trigger = 0;
+			//assim que encontrar o nosso delimitador
+			//damos reset ao trigger para que entre na 
+			//condição de cima para poder andar para a frente
+			//para verificar se voltamos a ter o delimitador novamente
+		s++;
+		//vai andar com a string para a frente ate encontrar o c
+	}
+	return (i);
+	//esta função apenas conta palavras para podermos alocar os bytes necessários
+}
+
+static char	*duplicador(char const *str, int strt, int end)
+//strt = 0, end = i (vem do split)
+{
+	char	*palavra;
+	int		i;
+
+	i = 0;
+	palavra = malloc(((end - strt) + 1) * sizeof(char));
+	//alocamos a palavra que encontramos ate ao delimitador
+	if (!palavra)
+		return (0);
+	while (strt < end)
+		palavra[i++] = str[strt++];
+	//começamos a escrever a nova string com o que
+	//encontramos ate ao delimitador até que strt seja igual a end
+	//por isso incrementamos o i e o strt
+	palavra[i] = '\0';
+	//o ultimo index da nova string é sempre '\0'
+	return (palavra);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**split;
+	int		i;
+	int		f;
+	int		index;
+
+	f = 0;
+	i = 0;
+	split = malloc((contador(s, c) + 1) * sizeof(char *));
+	//alocar a memoria necessaria que iremos precisar
+	//vamos saber quantos bytes na função contador
+	index = 0;
+	if (!s || !split)
+		return ('\0');
+	while (i < ft_strlen(s))
+	{
+		while (s[i] == c)
+			i++;
+		index = i;
+		while (s[i] != c && s[i])
+			i++;
+			//sai do loop while quando encontrar o delimitador
+		if (s[i] || i > index)
+		//o nosso i vai ser sempre maior que o index pois na l87 ao
+		//dizer index=i vamos dar reset ao index quando encontrarmos o c
+		//fazendo que enquanto a string não terminar vamos á função duplicador
+			split[f++] = duplicador(s, index, i);
+		//aqui dizemos que o split é igual ao duplicador pois vamos precisar
+		//que a função crie os array de string delimitadas por c
+		//duplicador cria substring e a incrementação do splitf armazena-as
+	}
+	split[f] = '\0';
+	return (split);
+}

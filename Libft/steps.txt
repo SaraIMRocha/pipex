@@ -1,0 +1,282 @@
+libft.h
+
+- Definir biblioteca
+- Colocar as bibliotecas a utilizar
+- Typedef struct
+- Escrever todas as funções e o protótipo que a minha biblioteca vai ter
+
+
+The #ifdef and #ifndef preprocessor directives have the 
+same effect as the #if directive when its used with the defined operator.
+
+Syntax
+
+#ifdef -> identifier
+#ifndef -> identifier
+
+
+The typedef keyword allow users to provide alternative names for the primitive 
+(e.g.,​ int) and user-defined​ (e.g struct) data types.
+Remember, this keyword adds a new name for some existing
+ data type but does not create a new type.
+
+-----------------------------------------
+
+UNSIGNED KEYWORD
+
+Non-negative
+Unsigned means non-negative
+The term "unsigned" in computer programming indicates a variable 
+that can hold only positive numbers. The term "signed" in 
+computer code indicates that a variable can hold negative and positive values.
+
+-----------------------------------------
+
+CONST KEYWORD
+
+The const keyword specifies that a variable's value is constant and tells the compiler 
+to prevent the programmer from modifying it.
+
+-----------------------------------------
+
+MEANING OF ITERATE
+
+In programming specifically, iterative refers to a sequence of instructions or code 
+being repeated until a specific end result is achieved. Iterative development is 
+sometimes called circular or evolutionary development.
+
+-----------------------------------------
+
+MAKEFILE .PHONY
+
+.PHONY directive is actually itself a target for the make commandand and it denotes
+ labels that do not represent files of the project
+In the general case, assuming that there are no files called 'build'
+ in the project, when not using the .PHONY target, like so
+
+build:
+        go build
+
+everytime the make build command is invoked it will execute the specified 
+command (in this case go build). However, if there was a file named build, 
+the make build would be bound by the presence of this file and executed 
+only if that file was updated.
+
+The .PHONY target overrides this last behaviour and let's the make build 
+execute no matter of the presence of a file named build.
+
+-----------------------------------------
+
+STRUCTS (LST)
+
+Arrays allow to define type of variables that can hold several data items of the same kind. Similarly structure 
+is another user defined data type available in C that allows to combine data items of different kinds.
+Structures are used to represent a record.
+
+Structs, também conhecidas como Registros, definem tipos de dados que agrupam variáveis sob um mesmo tipo de dado.
+
+A ideia de usar uma struct é permitir que, ao armazenar os dados de uma mesma entidade, 
+isto possa ser feito com uma única variável. 
+Por exemplo, se for preciso armazenar a altura, o peso e a idade de uma pessoa, 
+pode-se criar uma struct chamada Pessoa e agrupar 
+os dados em um único tipo de dado, conforme o exemplo a seguir.
+
+Aos dados agruados em uma struct dá-se o nome de campos(fields).
+typedef struct // Cria uma STRUCT para armazenar os dados de uma pessoa
+{
+    float Peso;   // define o campo Peso
+    int Idade;    // define o campo Idade
+    float Altura; // define o campo Altura
+} Pessoa; // Define o nome do novo tipo criado
+
+-----------------------------------------
+
+have a file named author using my username\n at the root of my repo
+have the functions c files
+have a libft with:
+	- prototypes
+	- macros
+	- typedefs
+have a makefile that compiles all source files to a static library "libft.a"
+the makefile have to contain the rules:
+	- $ (NAME), all, clean, fclean, re (remake)
+	- Compile with the flags -Wall -Wextra -Werror
+
+----------------------------------------
+
+É proibido utilizar variavéis globais
+As únicas funções autorizadas são:
+- malloc (3)
+- free (3)
+- write (2)
+
+Só ao incluir os ficheiros para usar 1 ou mais de 3 funções autorizadas 
+O único ficheiro que vou incluir que é autorizado posso usar string.have
+
+------------------------------------------
+
+Posso criar programas de teste para a minha biblioteca mesmo que este não tenha de ser submetido
+e não será avaliado mas será mais fácil avaliar o meu trabalho e testar o dos meus colegas
+
+------------------------------------------
+
+FORMAT SPECIFIERS
+
+%p
+Print memory address in the hexadecimal form
+
+%d or %i
+A decimal integer or signed integer 
+
+%c
+Signed character 
+
+%s
+A string or sequence of character 
+
+%u
+int unsigned decimal
+
+Scanf
+In C programming language, scanf is a function that stands for Scan Formatted String. 
+It reads data from stdin (standard input stream i.e. usually keyboard) and then writes
+the result into the given arguments. It accepts character, string, and numeric 
+data from the user using standard input.
+
+------------------------------------------
+
+FUNCTION INSIDE PROTOTYPE 
+
+In C language function prototype is used to provide function declaration. 
+It defines the function's name, returns types, and parameters. The return
+ types are the data types that the function returns after execution. 
+ If a function returns an integer, the return type is int.
+
+FD Functions
+
+For most operating systems, a file descriptor (FD) is a small non-negative integer that helps in 
+identifying an open file within a process while using input/output resources
+
+------------------------------------------
+
+STATIC KEYWORD
+
+The “static” keyword before a function name makes it static. 
+For example, below function fun() is static. Unlike global functions in C, 
+access to static functions is restricted to the file where they are declared. 
+Therefore, when we want to restrict access to functions, we make them static
+
+
+------------------------------------------
+
+CAST TYPE 
+Type Casting is basically a process in C in which we change a variable 
+belonging to one data type to another one. In type casting, the compiler 
+automatically changes one data type to another one depending on 
+what we want the program to do.
+
+------------------------------------------
+
+LINKED LIST STRUCT
+
+https://www.geeksforgeeks.org/what-is-linked-list/
+Like arrays, Linked List is a linear data structure. Unlike arrays, 
+linked list elements are not stored at a contiguous location; 
+the elements are linked using pointers. They include a series 
+of connected nodes. Here, each node stores the data and the address of the next node.
+
+// C program to implement a
+// linked list
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+	int data;
+	struct Node* next;
+};
+
+// Driver's code
+int main()
+{
+	struct Node* head = NULL;
+	struct Node* second = NULL;
+	struct Node* third = NULL;
+
+	// allocate 3 nodes in the heap
+	head = (struct Node*)malloc(sizeof(struct Node));
+	second = (struct Node*)malloc(sizeof(struct Node));
+	third = (struct Node*)malloc(sizeof(struct Node));
+
+	/* Three blocks have been allocated dynamically.
+	We have pointers to these three blocks as head,
+	second and third
+	   head		   second		   third
+		|			 |				 |
+		|			 |				 |
+	+---+----+ 	 +----+----+	 +---+---+
+	| # | # |	  | # | # |		 | # | # |
+	+---+----+	 +----+----+	 +---+---+
+
+# represents any random value.
+Data is random because we haven’t assigned
+anything yet
+
+	head->data = 1; // assign data in first node
+	head->next = second; // Link first node with
+	the second node
+
+	Data has been assigned to the data part of the first
+	block (block pointed by the head). And next
+	pointer of first block points to second.
+	So they both are linked.
+
+      head		  second			 third
+		|			 |				   |
+		|			 |			       |
+	+---+---+	 +----+----+	 +-----+----+
+	| 1 | o-----> | # | # |	 	   | # | # |
+	+---+---+	 +----+----+	 +-----+----+
+
+
+	// assign data to second node
+	second->data = 2;
+
+	// Link second node with the third node
+	second->next = third;
+
+	/* data has been assigned to the data part of the second
+	block (block pointed by second). And next
+	pointer of the second block points to the third
+	block. So all three blocks are linked.
+
+	  head		  second		third
+		|			 |			  |
+		|			 |			  |
+	+---+---+	 +---+---+	 +----+----+
+	| 1 | o----->| 2 | o-----> | # | # |
+	+---+---+	 +---+---+	 +----+----+
+
+	third->data = 3; // assign data to third node
+	third->next = NULL;
+
+	/* data has been assigned to data part of third
+	block (block pointed by third). And next pointer
+	of the third block is made NULL to indicate
+	that the linked list is terminated here.
+
+	We have the linked list ready.
+
+		  head
+			|
+			|
+		+---+---+	 +---+---+	 +----+------+
+		| 1 | o----->| 2 | o-----> | 3 | NULL |
+		+---+---+	 +---+---+	 +----+------+
+
+
+	Note that only head is sufficient to represent
+	the whole list. We can traverse the complete
+	list by following next pointers.
+
+	return 0;
+}
